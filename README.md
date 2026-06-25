@@ -1,18 +1,15 @@
-# SLOP — A Statement
+# I Hate Taste Slop
 
-**Lebanese University · Faculty of Engineering · Full Stack Development, 2026**
+**Lebanese University · Faculty of Engineering · Full Stack Development, 2026
+Student: Michel Njeim**
 
-> \*An AI generates a live philosophical thesis criticising AI-generated content — while you read it.\*
+> \*An AI generates a live philosophical thesis criticising AI-generated content — while you read it, surrounded by examples of exactly that content.\*
 
 ## Live URL
-
-<!-- Add your Netlify/Vercel URL here after deployment -->
 
 `https://6a3d0453535cc8055d9b3e2d--teal-bubblegum-71d105.netlify.app`
 
 ## GitHub Repository
-
-<!-- Add your GitHub URL here -->
 
 `https://github.com/Michel-2025/slop-statement`
 
@@ -20,29 +17,21 @@
 
 ## What is this?
 
-SLOP is a three-page web statement built around a central irony: an AI API (Anthropic Claude)
-generates a live, cursor-typed philosophical thesis criticising AI-generated content — displayed
-in real time as visitors arrive.
+I Hate Taste Slop is a three-page web statement about AI-generated content. Each page documents a different category: written slop, visual slop, and audible slop. On each page, a live AI-generated philosophical thesis types itself across the center of the screen — criticising AI content while being AI content itself.
+
+The thesis loops: when it finishes, it slides off left and begins again. This is intentional. AI-generated content does not conclude. It produces, and produces, cycling through the same patterns indefinitely.
 
 * **Page 1 (off-white):** Written slop — AI articles, journals, AI-ghostwritten books
 * **Page 2 (blue):** Visual slop — AI paintings, generated photos, AI-designed websites
 * **Page 3 (yellow):** Audible slop — AI music, AI podcasts, synthetic voices
-* **About page:** Hidden from prominent nav. Accessible via the small "about" link.
-
-Each page features:
-
-1. A live AI-typed philosophical thesis with inline citations
-2. A 3-column responsive Flexbox gallery of real examples (own curated content)
-3. Client-side search and category filtering
-
-The site auto-destructs on **August 5, 2026** — one month after the due date — to reduce energy consumption.
+* **About page:** Accessible via the faint "About" link in the nav, and as a full-screen overlay on first visit
 
 \---
 
 ## API Used
 
-* **Primary:** Google Gemini API (gemini-2.5-flash) — for live thesis streaming
-* **Secondary:** API Ninjas (`/v1/quotes?category=technology`) — for the technology quotes strip on the Written page
+* **Primary:** Google Gemini API (`gemini-2.5-flash`) — generates the live philosophical thesis on each page. Called via a Netlify serverless function so the key never touches the browser.
+* **Secondary:** API Ninjas (`/v1/quotes?category=technology`) — fetches technology quotes displayed on the Written page. Falls back to static quotes if unavailable.
 
 \---
 
@@ -50,24 +39,20 @@ The site auto-destructs on **August 5, 2026** — one month after the due date �
 
 **Requirement:** Create a responsive 3-column layout using Flexbox for a gallery.
 
-**Implementation:**
-
-The `.gallery` container uses `display: flex; flex-wrap: wrap;` and each `.gallery-card`
-receives a calculated width:
+**Implementation** (see `.gallery` and `.gallery-card` in `css/main.css`):
 
 ```css
-/\* UNIQUE UI REQUIREMENT: 3-column Flexbox gallery \*/
+/\* UNIQUE UI REQUIREMENT: 3-column responsive Flexbox gallery \*/
 .gallery {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--col-gap);   /\* 20px gap between cards \*/
+  gap: var(--col-gap); /\* 16px \*/
 }
 
 .gallery-card {
   flex: 0 0 calc(33.333% - var(--col-gap) \* 2 / 3);
 }
 
-/\* Responsive breakpoints \*/
 @media (max-width: 700px) {
   .gallery-card { flex: 0 0 calc(50% - var(--col-gap) / 2); }
 }
@@ -76,17 +61,15 @@ receives a calculated width:
 }
 ```
 
-This gives a true 3-column layout on desktop, 2-column on tablet, and 1-column on mobile.
-The `calc()` formula subtracts the correct share of gap width from each card.
+Card previews are drawn with the Canvas API — no external images or emojis. Each page type has a distinct visual treatment: written pages use a paper-and-ink document aesthetic, visual pages use abstract color fields, audio pages use waveform visualisations.
 
-The `GalleryRenderer` ES6 class (in `js/gallery.js`) builds cards dynamically,
-handles loading skeletons, and applies client-side search + filter on every keypress.
+The `GalleryRenderer` ES6 class (`js/gallery.js`) builds all cards dynamically and handles loading skeleton states.
 
 \---
 
 ## Screenshots
 
-`/screenshots/` directory contains:
+`/screenshots/` contains:
 
 * `desktop-written.png` — Page 1 at 1440px
 * `desktop-visual.png` — Page 2 at 1440px
@@ -102,78 +85,75 @@ handles loading skeletons, and applies client-side search + filter on every keyp
 
 |Tool|Used for|
 |-|-|
-|Claude (Anthropic)|Initial concept refinement; system prompt drafting for the thesis engine; debugging the SSE streaming parser|
-|ChatGPT|Checking CSS `calc()` formula for flex column widths; proofreading the about page copy|
+|Claude (Anthropic)|Full project architecture, all code generation, debugging, iterative UI fixes throughout development|
+|Google Gemini (via API)|Live thesis generation on each page of the site itself|
 
 ### Actual Prompts Used
 
-**Prompt 1** (to Claude, for thesis system prompt):
+**Prompt 1** — initial concept and architecture:
 
-> "I'm building a website where an AI generates a live philosophical thesis criticising AI slop in real time. The thesis should feel genuinely intellectual and reference real thinkers like Walter Benjamin, Nicholas Carr, and Hito Steyerl. Write me a system prompt for Claude that would produce this — for a page about visual art. The AI should acknowledge its own irony."
+> "I need my api key to be hidden just like dr said. Before doing this the api situation is still not working, the live text isn't showing up."
 
-**Prompt 2** (to Claude, for streaming code):
+**Prompt 2** — debugging the API 404:
 
-> "I need a JavaScript class that calls the Anthropic streaming API and types each character to a DOM element at 28ms per character, pausing longer at punctuation. Show me the fetch() call with ReadableStream parsing."
+> "The api you just made, what is it supposed to do? Because that doesn't seem like it's working. I'm loading the site but no AI is being written live."
 
-**Prompt 3** (to ChatGPT, for flex layout):
+**Prompt 3** — layout and hero centering:
 
-> "In CSS Flexbox with 3 equal columns and a 20px gap, what is the exact calc() formula for each card's flex-basis so that 3 cards fill the row with no overflow?"
+> "The text on top is not well centered it's too close to the sticky bar. I want the first row of the gallery way down so that it barely shows but enough for the user to know it's there and scrolls. Instead make the quote/live thesis be centered vertically."
 
 ### What the AI Got Wrong
 
-**Problem 1:** The streaming SSE parser Claude suggested initially used `response.text()`
-(reading the full body at once) instead of `response.body.getReader()`. This meant the
-"streaming" effect didn't work — all the text appeared at once after the full response loaded.
+**Problem 1: Script loading order crashed the API silently.**
+`config.js` and `api.js` were placed at the bottom of `<body>` after the inline script that called `new AnthropicClient()`. This meant `CONFIG` was undefined when the thesis engine tried to initialise — the whole thing failed silently with no visible error, just a blank thesis area.
 
-*How I found it:* I noticed the thesis text appeared all at once on page load, not character
-by character. I added `console.log()` inside the streaming callback and saw it was only
-called once.
+*How I found it:* Opened DevTools console and saw `ReferenceError: CONFIG is not defined` firing immediately on page load.
 
-*How I fixed it:* Rewrote the `stream()` method in `js/api.js` to use `ReadableStream` with
-a `while` loop, `reader.read()`, and manual SSE line parsing — splitting on `\\n` and looking
-for `data: ` prefixes.
+*How I fixed it:* Moved both `<script src="config.js">` and `<script src="js/api.js">` into the `<head>` of every HTML page so they load before any other script runs.
 
-**Problem 2:** The flex `calc()` formula Claude generated (`calc(33% - 20px)`) was
-slightly wrong — it left a \~3px gap at the end of each row because `33%` is not exactly
-`1/3`. Cards weren't filling the row cleanly.
+**Problem 2: Gemini returning 404 on model name.**
+The original code used `gemini-1.5-flash` as the model name. The API was receiving requests (confirmed in the Gemini dashboard) but returning 404. Changing to `gemini-1.5-flash-latest` didn't help either.
 
-*How I found it:* Looking at the layout in Chrome DevTools, the third card didn't reach
-the right edge of the container. There was a visible gap.
+*How I found it:* Checked the Gemini console — requests were arriving but the model endpoint didn't exist for my account tier.
 
-*How I fixed it:* Changed `33%` to `33.333%` and adjusted the gap subtraction to
-`var(--col-gap) \* 2 / 3` (since 3 cards share 2 gaps). The formula
-`calc(33.333% - var(--col-gap) \* 2 / 3)` fills the row exactly.
+*How I fixed it:* Added a model auto-discovery step that first calls `/v1beta/models` to list all models available to the API key, then picks the first compatible one. This surfaced `gemini-2.5-flash` as the correct model for my account.
+
+**Problem 3: Gallery not scrolling into view — the thesis section was in normal document flow.**
+Multiple attempts to fix centering with `margin-top` and `padding` on `.thesis-section` failed because the section was `position: relative`, meaning the gallery immediately followed it in flow regardless of what padding was applied.
+
+*How I found it:* Inspecting the page in DevTools showed `.thesis-section` ending right where the gallery began — no scroll gap existed in the DOM.
+
+*How I fixed it:* Changed `.thesis-section` to `position: fixed` (removing it from document flow entirely) and added a `.gallery-spacer` div of `height: calc(100vh - 80px)` before the gallery in the HTML. This creates the scroll distance while the fixed thesis acts as a full-screen background.
 
 \---
 
 ## Tech Stack
 
 * HTML5 (semantic)
-* CSS3 (Flexbox, CSS variables, custom properties, `@keyframes`)
-* JavaScript (ES6+ classes, `fetch()`, `ReadableStream`)
-* Bootstrap 5 — not used (project uses hand-written CSS only)
-* Google Fonts (DM Serif Display, DM Sans)
-* Anthropic API (claude-sonnet-4-20250514)
+* CSS3 (Flexbox, CSS custom properties, `@keyframes`, `mask-image`, Canvas API)
+* JavaScript ES6+ (classes, `fetch()`, `async/await`, `sessionStorage`, Canvas 2D)
+* Google Fonts (Playfair Display, IM Fell English)
+* Google Gemini API (`gemini-2.5-flash`)
 * API Ninjas (quotes endpoint)
-* Netlify (deployment)
+* Netlify (deployment + serverless function for API key proxy)
 
 \---
 
 ## Running Locally
 
 ```bash
-# No build step — static HTML/CSS/JS
-# Just open index.html in a browser, or use a local server:
 npx serve .
-# or
-python3 -m http.server 8000
 ```
 
-Set your API Ninjas key in `index.html` where noted (`YOUR\_API\_NINJAS\_KEY`).
-The Anthropic API key is handled by the platform context in development;
-for production set it as a Netlify environment variable (`ANTHROPIC\_API\_KEY`).
+Requires `config.js` in the project root with your Gemini key:
+
+```js
+const CONFIG = { geminiKey: 'YOUR\_KEY\_HERE' };
+```
+
+For production, the key is set as `GEMINI\_KEY` in Netlify environment variables and accessed via the serverless function at `netlify/functions/gemini.js`.
 
 \---
 
-*This README was written by a human, with AI assistance. The irony is intentional.*
+*This README was written with AI assistance. The irony is fully intended.*
 
