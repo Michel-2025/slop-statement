@@ -1,0 +1,508 @@
+/* ============================================================
+   I Hate Taste Slop — main.css  v3
+   ============================================================ */
+
+/*
+  Font strategy:
+  - Title ("I Hate Taste Slop"): Playfair Display — humanist, trendy,
+    used by new-wave AI/editorial brands (Perplexity, Arc, etc.)
+  - Body & UI: IM Fell English — digitisation of a 1600s typeface,
+    the "faxed Times New Roman" quality: slightly irregular, literary,
+    open source on Google Fonts. Italic variant is especially beautiful.
+*/
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&display=swap');
+
+/* ── Design Tokens ─────────────────────────────────────────── */
+:root {
+  --bg: #F5F5F0;
+  --fg: #1A1A1A;
+  --fg-muted: rgba(26,26,26,0.42);
+  --fg-faint: rgba(26,26,26,0.18);
+  --nav-bg: rgba(245,245,240,0.94);
+  --card-border: rgba(0,0,0,0.07);
+  --card-shadow: 0 2px 14px rgba(0,0,0,0.09);
+  --card-hover-shadow: 0 6px 28px rgba(0,0,0,0.15);
+
+  --font-title:   'Playfair Display', Georgia, serif;
+  --font-body:    'IM Fell English', 'Times New Roman', serif;
+
+  --max-width: 960px;
+  --col-gap: 16px;
+  --radius: 3px;
+  --nav-height: 50px;
+}
+
+body.page-visual {
+  --bg: #D6E8F5;
+  --nav-bg: rgba(214,232,245,0.94);
+}
+body.page-audio {
+  --bg: #FAF0C0;
+  --nav-bg: rgba(250,240,192,0.94);
+}
+body.page-about {
+  --bg: #111;
+  --fg: #E8E8E2;
+  --fg-muted: rgba(232,232,226,0.42);
+  --fg-faint: rgba(232,232,226,0.18);
+  --nav-bg: rgba(17,17,17,0.96);
+  --card-border: rgba(255,255,255,0.08);
+}
+
+/* ── Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+/* ── Navigation ─────────────────────────────────────────────── */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-height);
+  background: var(--nav-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--card-border);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+}
+
+/* Logo uses Playfair Display — the "trendy AI brand" title font */
+.nav-logo {
+  font-family: var(--font-title);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+  opacity: 0.88;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  list-style: none;
+}
+.nav-links a {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.38;
+  transition: opacity 0.18s;
+}
+.nav-links a:hover,
+.nav-links a.active { opacity: 1; }
+.nav-links a:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Hidden concept link — same size as nav links, just more faded */
+.nav-about-link {
+  opacity: 0.22 !important;
+}
+.nav-about-link:hover { opacity: 0.7 !important; }
+
+/* ── Thesis Section ─────────────────────────────────────────── */
+/*
+  FIXED to the screen like a wallpaper (z-index 1, behind everything).
+  The gallery section is in normal scroll flow with z-index 10,
+  so it slides over the thesis as the user scrolls down.
+  A .gallery-spacer div (height: 100vh) in the HTML sits before the
+  gallery and creates the scroll distance needed to make the thesis
+  fill the first screen. The spacer is transparent so the fixed
+  thesis shows through underneath it.
+*/
+.thesis-section {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  /* Shift center down so it clears the nav bar */
+  padding-top: var(--nav-height);
+}
+
+.thesis-track {
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 15%,
+    black 85%,
+    transparent 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100vw;
+  padding: 0 50vw 0 0;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.thesis-text {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: clamp(1.5rem, 3vw, 2.4rem);
+  line-height: 1;
+  color: var(--fg);
+  white-space: nowrap;
+  display: inline;
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--fg);
+  margin-left: 4px;
+  vertical-align: middle;
+  animation: blink 0.9s step-end infinite;
+  flex-shrink: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cursor { animation: none; opacity: 1; }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.thesis-citation {
+  margin-top: 18px;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--fg-muted);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.5s;
+  pointer-events: none;
+}
+.thesis-citation.visible { opacity: 1; }
+
+/* ── Gallery Spacer ─────────────────────────────────────────── */
+/*
+  Transparent div that fills the first screen.
+  Sits in scroll flow so the page has something to scroll through
+  while the thesis is visible. 80px less than full viewport height
+  so the top edge of the first gallery card row is just barely
+  visible — enough to tell the user to scroll.
+*/
+.gallery-spacer {
+  height: calc(100vh - 80px);
+  pointer-events: none;
+}
+
+/* ── Gallery Section ────────────────────────────────────────── */
+/*
+  The gallery sits below the full-height thesis hero.
+  padding-top pushes content down so only the very top of the
+  first card row is visible at the bottom of the initial viewport —
+  just enough to signal "scroll for more" without competing with the hero.
+  The value calc(100vh - 120px) means: skip almost a full screen, then
+  show ~120px of cards peeking up from below the fold.
+*/
+.gallery-section {
+  position: relative;
+  z-index: 10;
+  background-color: var(--bg);
+  box-shadow: 0 -12px 40px rgba(0,0,0,0.07);
+  padding: 32px 28px 72px;
+}
+
+/* ── Gallery Grid (UNIQUE UI REQUIREMENT: 3-col Flexbox) ─────── */
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--col-gap);
+  align-items: flex-start;
+}
+
+.gallery-card {
+  /* FLEXBOX 3-COLUMN */
+  flex: 0 0 calc(33.333% - var(--col-gap) * 2 / 3);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+  color: var(--fg);
+  box-shadow: var(--card-shadow);
+  position: relative;
+  background: #000; /* fallback behind canvas previews */
+}
+.gallery-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--card-hover-shadow);
+}
+.gallery-card:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 3px;
+}
+
+/* Responsive: 3→2→1 */
+@media (max-width: 700px) {
+  .gallery-card { flex: 0 0 calc(50% - var(--col-gap) / 2); }
+}
+@media (max-width: 440px) {
+  .gallery-card { flex: 0 0 100%; }
+}
+
+/* Canvas preview takes up the card */
+.gallery-card-canvas {
+  width: 100%;
+  aspect-ratio: 4/3;
+  display: block;
+}
+
+/* Text overlay — pinned to bottom, no background, shadow only */
+.gallery-card-body {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 8px 10px 10px;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%);
+}
+
+.gallery-card-title {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 400;
+  line-height: 1.3;
+  color: #fff;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.gallery-card-source {
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  font-style: italic;
+  color: rgba(255,255,255,0.6);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Skeleton cards ─────────────────────────────────────────── */
+.gallery-empty {
+  flex: 0 0 100%;
+  text-align: center;
+  padding: 48px 24px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-style: italic;
+  opacity: 0.35;
+}
+.skeleton-card {
+  flex: 0 0 calc(33.333% - var(--col-gap) * 2 / 3);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+}
+@media (max-width: 700px) {
+  .skeleton-card { flex: 0 0 calc(50% - var(--col-gap) / 2); }
+}
+@media (max-width: 440px) {
+  .skeleton-card { flex: 0 0 100%; }
+}
+.skeleton-thumb {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: linear-gradient(90deg, var(--fg-faint) 25%, rgba(0,0,0,0.08) 50%, var(--fg-faint) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Footer ──────────────────────────────────────────────────── */
+.footer {
+  text-align: center;
+  padding: 32px 24px 28px;
+  border-top: 1px solid var(--card-border);
+}
+.footer-notice {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-style: italic;
+  opacity: 0.28;
+  margin-bottom: 8px;
+}
+.footer-timer {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  opacity: 0.2;
+  font-variant-numeric: tabular-nums;
+}
+.footer-timer span { font-style: italic; }
+
+/* ── About Page ─────────────────────────────────────────────── */
+.about-content {
+  max-width: 600px;
+  margin: 0 auto;
+  /* nav-height + generous breathing room so title is clearly below bar */
+  padding: calc(var(--nav-height) + 72px) 28px 80px;
+}
+.about-title {
+  font-family: var(--font-title);
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(2.8rem, 7vw, 5rem);
+  line-height: 1.05;
+  margin-bottom: 52px;
+}
+.about-section { margin-bottom: 40px; }
+.about-section h2 {
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.3;
+  margin-bottom: 12px;
+}
+.about-section p {
+  font-family: var(--font-body);
+  font-size: 0.96rem;
+  line-height: 1.85;
+  opacity: 0.72;
+}
+.about-section p + p { margin-top: 10px; }
+.about-refs { list-style: none; margin-top: 8px; }
+.about-refs li {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-style: italic;
+  opacity: 0.5;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--card-border);
+}
+.about-refs li:last-child { border-bottom: none; }
+
+/* ── About Overlay (shown on first visit) ───────────────────── */
+.about-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg);
+  opacity: 1;
+  transition: opacity 0.5s ease;
+  /* NO overflow here — the inner div handles scroll */
+}
+.about-overlay.hiding {
+  opacity: 0;
+  pointer-events: none;
+}
+.about-overlay-close {
+  position: fixed; /* fixed to viewport, always visible */
+  top: 20px;
+  right: 28px;
+  z-index: 201;
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--fg);
+  opacity: 0.4;
+  cursor: pointer;
+  transition: opacity 0.18s;
+  padding: 4px 8px;
+}
+.about-overlay-close:hover { opacity: 1; }
+/* Inner scrollable container */
+.about-overlay-scroll {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 64px 32px 80px;
+}
+.about-overlay-content {
+  max-width: 580px;
+  width: 100%;
+}
+.about-overlay-title {
+  font-family: var(--font-title);
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1.05;
+  margin-bottom: 36px;
+}
+.about-overlay-section {
+  margin-bottom: 28px;
+}
+.about-overlay-section h2 {
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.3;
+  margin-bottom: 10px;
+}
+.about-overlay-section p {
+  font-family: var(--font-body);
+  font-size: 0.94rem;
+  line-height: 1.8;
+  opacity: 0.72;
+}
+.about-overlay-section p + p { margin-top: 8px; }
+.about-overlay-enter {
+  margin-top: 40px;
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.45;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--fg);
+  transition: opacity 0.18s;
+  padding: 0;
+}
+.about-overlay-enter:hover { opacity: 1; }
+
+/* ── Responsive Nav ─────────────────────────────────────────── */
+@media (max-width: 520px) {
+  .nav { padding: 0 16px; }
+  .nav-links { gap: 16px; }
+  .nav-logo { font-size: 0.88rem; }
+  .gallery-section { padding: 0 16px 48px; }
+}
