@@ -19,6 +19,7 @@ class GalleryRenderer {
   constructor({ containerEl, items, type = 'written' }) {
     this.container = containerEl;
     this.items     = items;
+    this.allItems  = items;
     this.type      = type;
   }
 
@@ -26,8 +27,48 @@ class GalleryRenderer {
     this._showSkeletons(6);
     await new Promise(r => setTimeout(r, 280));
     this._render();
+    this._appendSearch();
   }
 
+  _appendSearch() {
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'margin-top:24px;text-align:center;';
+
+    const input = document.createElement('input');
+    input.type = 'search';
+    input.placeholder = 'search';
+    input.setAttribute('aria-label', 'Search gallery');
+    input.style.cssText = [
+      'font-family:inherit',
+      'font-size:0.72rem',
+      'font-style:italic',
+      'background:transparent',
+      'border:none',
+      'border-bottom:1px solid rgba(0,0,0,0.15)',
+      'color:inherit',
+      'padding:4px 2px',
+      'width:140px',
+      'outline:none',
+      'text-align:center',
+      'opacity:0.4',
+      'transition:opacity 0.2s,width 0.2s',
+    ].join(';');
+
+    input.addEventListener('focus', () => { input.style.opacity='1'; input.style.width='200px'; });
+    input.addEventListener('blur',  () => { input.style.opacity='0.4'; input.style.width='140px'; });
+    input.addEventListener('input', () => {
+      const q = input.value.toLowerCase().trim();
+      this.items = q
+        ? this.allItems.filter(i =>
+            i.title.toLowerCase().includes(q) ||
+            (i.source || '').toLowerCase().includes(q))
+        : this.allItems;
+      this._render();
+    });
+
+    wrapper.appendChild(input);
+    this.container.parentElement.appendChild(wrapper);
+  }
   _render() {
     this.container.innerHTML = '';
     const fragment = document.createDocumentFragment();

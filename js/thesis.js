@@ -41,13 +41,13 @@ class ThesisEngine {
         this._buildSystemPrompt(),
         this._buildUserMessage(),
         (chunk) => this._enqueue(chunk),
-        (fullText) => this._scheduleReplay(fullText)
+        () => this._scheduleReplay()
       );
     } catch (e) {
       console.warn('[SLOP] API failed, using fallback:', e);
       const fallback = this._getFallbackText();
       this._enqueue(fallback);
-      this._scheduleReplay(fallback);
+      this._scheduleReplay();
     }
   }
 
@@ -55,27 +55,25 @@ class ThesisEngine {
    * When typing finishes, wait 2s, slide the text off to the left,
    * then retype the same text — infinite loop, no extra API calls.
    */
-  _scheduleReplay(fullText) {
-    // Wait until the queue is actually empty (typing may still be in progress)
+  _scheduleReplay() {
     const waitForEmpty = () => {
       if (this.isTyping || this.typeQueue.length > 0) {
         setTimeout(waitForEmpty, 200);
         return;
       }
-      // Pause at end so reader can finish the last sentence
-      setTimeout(() => this._slideOffAndReplay(fullText), 2400);
+      setTimeout(() => this._slideOffAndRestart(), 2400);
     };
     waitForEmpty();
   }
 
-  _slideOffAndReplay(fullText) {
-    // Animate the text sliding off to the left
+  _slideOffAndRestart() {
+    // Slide current text off to the left
     this.textEl.style.transition = 'transform 1.4s ease-in, opacity 1.4s ease-in';
     this.textEl.style.transform  = 'translateX(-120vw)';
     this.textEl.style.opacity    = '0';
 
     setTimeout(() => {
-      // Reset state
+      // Reset all state
       this.typedSoFar       = '';
       this.charCount        = 0;
       this.nextCitTrigger   = 0;
@@ -85,16 +83,11 @@ class ThesisEngine {
       this.textEl.style.transition = 'none';
       this.textEl.style.transform  = '';
       this.textEl.style.opacity    = '1';
-
-      // Hide citation
       this.citEl.classList.remove('visible');
       this.citEl.textContent = '';
 
-      // Brief pause before retyping starts
-      setTimeout(() => {
-        this._enqueue(fullText);
-        this._scheduleReplay(fullText);
-      }, 600);
+      // Brief pause then fetch a fresh response from Gemini
+      setTimeout(() => this.start(), 600);
     }, 1500);
   }
 
